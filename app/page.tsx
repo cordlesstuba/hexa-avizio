@@ -7,11 +7,19 @@ import { Input } from "@nextui-org/react";
 import Calendar from "@/components/Calendar";
 import ModalDiag from "@/components/Modal";
 
+type Event = {
+  title: string;
+  start: Date;
+  end: Date;
+  url: string;
+}
+
 export default function Home() {
-  
+
   // calendar state
   const [startDate, setStartDate] = useState(new Date);
   const [endDate, setEndDate] = useState(new Date);
+  const [events, setEvents] = useState<Event[]>([]);
 
   const handleDateSelected = (info: any) => {
     setStartDate(info.start)
@@ -20,7 +28,7 @@ export default function Home() {
   };
 
   // modal state
-  const [isModalOpen, setModalOpen] = useState(true);
+  const [isModalOpen, setModalOpen] = useState(false);
   const [subject, setSubject] = useState('');
 
   const handleOpenModal = () => {
@@ -37,13 +45,31 @@ export default function Home() {
   };
 
   const createMeeting = async () => {
-    console.log({subject, startDate, endDate})
+    const response = await fetch('/api/meeting/new', {
+      method: 'POST',
+      body: JSON.stringify({
+        subject: subject,
+        startDate: startDate,
+        endDate: endDate
+      })
+    })
+
+    if (response.ok) {
+      const { data } = await response.json()
+      setEvents([
+        ...events,
+        { title: subject, start: startDate, end: endDate, url: data.start_url }
+      ]);
+    } else {
+      alert("Error while creating zoom meeting")
+    }
   }
 
   return (
     <NextUIProvider>
       <Calendar
         onDateSelected={handleDateSelected}
+        events={events}
       />
 
       <ModalDiag isOpen={isModalOpen} onClose={handleCloseModal} onValidate={handleValidateModal}>

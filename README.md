@@ -2,15 +2,13 @@
 First, run build the docker image
 ```bash
 docker build -t hexa-avizio:latest .
+```
 
-`
-
-First, run the development server:
+Then, run the development server:
 
 ```bash
 docker run -p 3000:3000 hexa-avizio:latest
-
-`
+```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
